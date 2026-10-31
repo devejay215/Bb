@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Farewell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080706; --text:#f5efe3; --text-muted:#a9a39a; --gold:#d6b878;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ background: var(--bg); color: var(--text); font-family:'Inter', sans-serif; -webkit-font-smoothing: antialiased; overflow-x:hidden; }
+
+  .grain{
+    position:fixed; inset:0; pointer-events:none; opacity:0.045; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size:180px 180px; z-index:80;
+  }
+
+  section{
+    position:relative; min-height:100vh; min-height:100dvh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding: 10vh 7vw; text-align:center; overflow:hidden;
+  }
+
+  p.line{
+    font-family:'Cormorant Garamond', serif; font-weight:400;
+    font-size: clamp(1.15rem, 4vw, 1.5rem); line-height:1.55; color: var(--text);
+    opacity:0; transform: translateY(10px); transition: opacity 0.35s ease, transform 0.35s ease;
+    max-width: 480px;
+  }
+  p.line.show{ opacity:1; transform:translateY(0); }
+  p.line.muted{ color: var(--text-muted); font-style:italic; }
+  p.line.small{ font-family:'Inter', sans-serif; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color: var(--text-muted); }
+  p.line.strong{ font-size: clamp(1.4rem, 5vw, 1.9rem); color: var(--gold); }
+
+  .stack{ display:flex; flex-direction:column; align-items:center; gap: clamp(1.6rem, 4vh, 2.4rem); max-width:520px; }
+
+  /* ---------- OPENING ---------- */
+  #opening .stack{ gap: clamp(2.2rem, 6vh, 3.4rem); }
+  .date-line{ font-family:'Cormorant Garamond', serif; font-size: clamp(1.5rem, 5vw, 2rem); color: var(--gold); opacity:0; transition: opacity 0.35s ease; }
+  .date-line.show{ opacity:1; }
+  .date-sub{ font-family:'Inter', sans-serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color: var(--text-muted); margin-top:0.6rem; opacity:0; transition: opacity 0.35s ease; }
+  .date-sub.show{ opacity:1; }
+
+  /* ---------- CHECKLISTS ---------- */
+  .list-title{
+    font-family:'Cormorant Garamond', serif; font-size: clamp(1.5rem, 5vw, 2.1rem); margin-bottom:0.6rem;
+    opacity:0; transition: opacity 0.35s ease;
+  }
+  .list-title.show{ opacity:1; }
+  .list-intro{
+    font-family:'Cormorant Garamond', serif; font-style:italic; color: var(--text-muted);
+    font-size: clamp(1.02rem, 3.4vw, 1.2rem); margin-bottom: 2.4rem; max-width:440px;
+    opacity:0; transition: opacity 0.35s ease;
+  }
+  .list-intro.show{ opacity:1; }
+
+  .checklist{
+    display:flex; flex-direction:column; gap: 0.9rem; text-align:left;
+    max-width: 460px; width:100%; margin-bottom: 2.6rem;
+  }
+  .checklist li{
+    display:flex; align-items:flex-start; gap:0.7rem; list-style:none;
+    font-family:'Inter', sans-serif; font-weight:300; font-size: clamp(0.82rem, 2.6vw, 0.92rem);
+    line-height:1.5; color: rgba(245,239,227,0.82);
+    opacity:0; transform: translateY(6px); transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .checklist li.show{ opacity:1; transform:translateY(0); }
+  .checklist .box{
+    flex-shrink:0; width:16px; height:16px; margin-top:2px;
+    border:1px solid rgba(214,184,120,0.5); border-radius:2px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.7rem; color: var(--gold); position:relative;
+  }
+  .checklist .box .x{ opacity:0; transform: scale(0.5); transition: opacity 0.25s ease, transform 0.25s ease; }
+  .checklist .box.marked .x{ opacity:1; transform: scale(1); }
+  .checklist.no-mark .box{ border-color: rgba(214,184,120,0.3); }
+
+  .list-fade-out{ transition: opacity 1s ease, transform 1s ease; }
+  .list-fade-out.hide{ opacity:0; transform: translateY(-10px); pointer-events:none; }
+
+  /* ---------- PERSONAL MOMENT ---------- */
+  #personalMoment .stack{ gap: clamp(2rem, 5vh, 2.8rem); }
+  #personalMoment p.line{ font-size: clamp(1.3rem, 4.6vw, 1.75rem); }
+  .glow-text{ text-shadow: 0 0 24px rgba(214,184,120,0.25); }
+
+  /* ---------- FAREWELL ---------- */
+  #farewellSection p.line.emphasis{ font-size: clamp(1.35rem, 4.6vw, 1.8rem); color: var(--gold); }
+
+  /* ---------- FINAL WISH ---------- */
+  #finalWish .stack{ gap: clamp(1.8rem, 5vh, 2.6rem); }
+
+  /* ---------- ENVELOPE FINALE ---------- */
+  #finale{ background: var(--bg); }
+  /* Envelope finale keeps its original slower pacing regardless of the global speed-up above */
+  .finale-text p.line{ transition: opacity 0.9s ease, transform 0.9s ease !important; }
+  .finale-text{
+    display:flex; flex-direction:column; align-items:center; gap:1.6rem; max-width:440px;
+    transition: opacity 0.9s ease; position:relative; z-index:2;
+  }
+  .finale-text.fade-out{ opacity:0; }
+
+  .envelope-scene{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    opacity:0; transition: opacity 1s ease; pointer-events:none; z-index:3;
+  }
+  .envelope-scene.show{ opacity:1; }
+
+  .envelope-rig{
+    position:relative; width:min(78vw, 260px); height:180px;
+    transition: transform 1.3s ease;
+    perspective: 800px;
+  }
+  .envelope-rig.pulled-back{ transform: scale(0.82) translateY(10px); }
+
+  .envelope-body{
+    position:absolute; left:0; right:0; bottom:0; height:150px;
+    background: linear-gradient(180deg, #f1e7d2, #e6d9bc);
+    border-radius: 3px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(214,184,120,0.4);
+  }
+  .envelope-body::before{
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(160deg, rgba(255,255,255,0.15), rgba(0,0,0,0.05));
+    mix-blend-mode: overlay;
+  }
+  .envelope-body::after{
+    /* subtle inner "V" fold lines to suggest an envelope front */
+    content:""; position:absolute; left:0; right:0; top:0; height:100%;
+    background:
+      linear-gradient(115deg, transparent 49.4%, rgba(150,120,60,0.18) 49.7%, transparent 50%),
+      linear-gradient(245deg, transparent 49.4%, rgba(150,120,60,0.18) 49.7%, transparent 50%);
+  }
+
+  .envelope-flap{
+    position:absolute; left:0; right:0; top:0; height:80px;
+    background: linear-gradient(200deg, #ede1c9, #dcccaa);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transform: rotateX(180deg);
+    transition: transform 2.8s cubic-bezier(0.45,0,0.2,1);
+    box-shadow: inset 0 0 0 1px rgba(214,184,120,0.35);
+    z-index:2;
+  }
+  .envelope-rig.sealed .envelope-flap{ transform: rotateX(0deg); }
+
+  .envelope-seal{
+    position:absolute; left:50%; top:74px; transform:translate(-50%,-50%) scale(0);
+    width:22px; height:22px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #e3c07f, var(--gold) 70%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: transform 0.7s ease 2.4s;
+    z-index:3;
+  }
+  .envelope-rig.sealed .envelope-seal{ transform: translate(-50%,-50%) scale(1); }
+
+  .letter-card{
+    position:absolute; left:50%; bottom:38px; transform: translate(-50%, 0) scale(1);
+    width: min(66vw, 220px); min-height:150px;
+    background: #f8f1e4;
+    border-radius:2px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+    padding: 1.4rem 1.1rem;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.9rem;
+    opacity:0;
+    transition: opacity 1.6s ease, transform 2.6s cubic-bezier(0.6,0,0.3,1);
+    z-index:1;
+  }
+  .letter-card.visible{ opacity:1; }
+  .letter-card.entering{ transform: translate(-50%, 90px) scale(0.72); opacity:0; }
+
+  .letter-card p{
+    font-family:'Cormorant Garamond', serif; font-style:italic; color:#2c2417;
+    font-size: clamp(0.78rem, 2.8vw, 0.92rem); line-height:1.5;
+    opacity:0; transition: opacity 0.9s ease;
+  }
+  .letter-card p.show{ opacity:1; }
+  .letter-card .sign{ margin-top:0.3rem; font-style:normal; font-size: clamp(0.7rem, 2.4vw, 0.82rem); color:#6b5c3f; }
+
+  .chapter-closed{
+    position:absolute; left:50%; bottom:10%; transform:translateX(-50%);
+    font-family:'Cormorant Garamond', serif; font-size: clamp(1.5rem, 5.5vw, 2.2rem);
+    color: var(--text); opacity:0; transition: opacity 1.1s ease; z-index:4;
+    white-space:nowrap;
+  }
+  .chapter-closed.show{ opacity:1; }
+
+  .blackout{
+    position:fixed; inset:0; background:#000; opacity:0; z-index:100;
+    transition: opacity 2s ease; pointer-events:none;
+  }
+  .blackout.show{ opacity:1; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; }
+    p.line, .checklist li, .list-title, .list-intro, .finale-text, .envelope-scene,
+    .letter-card, .letter-card p, .chapter-closed, .envelope-rig, .envelope-flap, .envelope-seal, .blackout{
+      transition-duration:0.3s !important; transition-delay:0s !important;
+    }
+  }
+
+  /* ---------- SCROLL HINT ---------- */
+  .scroll-hint{
+    position:fixed; left:50%; bottom:5vh; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+    z-index:60; opacity:0; pointer-events:none;
+    transition: opacity 1s ease;
+  }
+  .scroll-hint.show{ opacity:0.7; }
+  .scroll-hint.dismissed{ opacity:0 !important; transition: opacity 0.6s ease; }
+  .scroll-hint span{
+    font-family:'Inter', sans-serif; font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase;
+    color: var(--text-muted);
+  }
+  .scroll-hint .chevron{
+    width:9px; height:9px; border-right:1px solid var(--gold); border-bottom:1px solid var(--gold);
+    transform: rotate(45deg); animation: scrollBob 2s ease-in-out infinite;
+  }
+  @keyframes scrollBob{
+    0%,100%{ transform: rotate(45deg) translate(0,0); opacity:0.6; }
+    50%{ transform: rotate(45deg) translate(3px,3px); opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .scroll-hint .chevron{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<div class="scroll-hint" id="scrollHint">
+  <span>Scroll down</span>
+  <div class="chevron"></div>
+</div>
+
+<!-- OPENING -->
+<section id="opening">
+  <div class="stack">
+    <p class="line small l1">Before you go&hellip;</p>
+    <p class="line l2">There's one thing I kept.</p>
+    <div>
+      <div class="date-line" id="dateLine">December 30, 2025</div>
+      <div class="date-sub" id="dateSub">The plans we made for 2026.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 1: RELATIONSHIP GOALS -->
+<section id="goals">
+  <div class="list-title">Our Relationship Goals for 2026</div>
+  <div class="list-intro">We wrote down everything we thought we needed to make us work.</div>
+
+  <ul class="checklist" id="goalsList">
+    <li><span class="box"><span class="x">✕</span></span><span>Communicate openly and honestly, even when it's uncomfortable</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Build trust through consistency, not promises</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Handle misunderstandings calmly and with respect</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Ask questions instead of assuming the worst</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Be emotionally present for each other, despite the distance</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Stay consistent with calls, texts, and check-ins</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Make time for each other with video calls and simple virtual dates</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Respect each other's space, time, and personal growth</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Grow as individuals while growing together</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Fix problems privately and maturely</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Avoid situations that could hurt the relationship or break trust</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Support each other's dreams and goals</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Plan visits realistically, without pressure or false expectations</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Talk honestly about the future and where we're headed</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Work toward closing the distance, one step at a time</span></li>
+    <li><span class="box"><span class="x">✕</span></span><span>Make the relationship healthier and better than last year</span></li>
+  </ul>
+
+  <div class="stack" id="afterGoals" style="gap:1.4rem;">
+    <p class="line muted g1">And somehow, we still failed to.</p>
+    <p class="line muted g2">The strange part is that we almost predicted it before it happened.</p>
+    <p class="line muted g3">We wrote down the things we wanted to protect, the things we wanted to improve, and the future we wanted to build.</p>
+    <p class="line muted g4">And life still chose a different path for us.</p>
+  </div>
+</section>
+
+<!-- SECTION 2: ACCEPTANCE -->
+<section id="acceptance">
+  <div class="stack">
+    <p class="line a1">I won't pretend the ending was what we wanted.</p>
+    <p class="line strong a2">It wasn't.</p>
+    <p class="line a3">But I don't want the ending to erase everything that was good.</p>
+    <p class="line a4">The memories were real.<br>The laughter was real.<br>The moments mattered.</p>
+    <p class="line muted a5">And I'm grateful for them.</p>
+  </div>
+</section>
+
+<!-- SECTION 3: THINGS I WANTED FOR YOU -->
+<section id="herGoals">
+  <div class="stack" style="margin-bottom:2rem;">
+    <p class="line h1">But there was another list.</p>
+    <p class="line muted h2">This one wasn't about us.</p>
+  </div>
+  <div class="list-title h3">Things I Wanted For You</div>
+
+  <ul class="checklist no-mark" id="herGoalsList" style="margin-top:2rem;">
+    <li><span class="box"></span><span>Take your time deciding between JAMB, private university, or going abroad</span></li>
+    <li><span class="box"></span><span>Study consistently, but gently, without burning yourself out</span></li>
+    <li><span class="box"></span><span>Save a little from whatever you earn, just to build the habit</span></li>
+    <li><span class="box"></span><span>Learn more about yourself, what you enjoy, what you're good at, and what stresses you</span></li>
+    <li><span class="box"></span><span>Build confidence in professional and everyday communication</span></li>
+    <li><span class="box"></span><span>Surround yourself with people who encourage growth and peace</span></li>
+    <li><span class="box"></span><span>Protect your mental and emotional health, especially during big decisions</span></li>
+    <li><span class="box"></span><span>Avoid comparing your journey to others; your timing is your own</span></li>
+    <li><span class="box"></span><span>Stay curious, keep learning, and ask questions when unsure</span></li>
+    <li><span class="box"></span><span>Grow in your values and faith, staying grounded</span></li>
+    <li><span class="box"></span><span>Take life one step at a time and allow yourself to grow into it</span></li>
+    <li><span class="box"></span><span>Make choices that future you will be thankful for</span></li>
+    <li><span class="box"></span><span>Work and gain experience with your RN while you figure out your next step</span></li>
+  </ul>
+</section>
+
+<!-- SECTION 4: MOST PERSONAL MOMENT -->
+<section id="personalMoment">
+  <div class="stack">
+    <p class="line p1">I know you're already achieving some of these.</p>
+    <p class="line p2">And I know I won't be here to know if you eventually tick all of them.</p>
+    <p class="line strong glow-text p3">But I hope you do.</p>
+    <p class="line muted p4">Not for me.</p>
+    <p class="line strong glow-text p5">For you.</p>
+  </div>
+</section>
+
+<!-- SECTION 5: FAREWELL -->
+<section id="farewellSection">
+  <div class="stack">
+    <p class="line f1">Whatever happens from here, I'm grateful for what we had.</p>
+    <p class="line f2">For the memories.<br>For the lessons.<br>For the person I got to know.</p>
+    <p class="line emphasis f3">I don't need to change the ending to appreciate the story.</p>
+    <p class="line muted f4">Our paths changed.</p>
+    <p class="line muted f5">And that's okay.</p>
+  </div>
+</section>
+
+<!-- SECTION 6: FINAL BIRTHDAY WISH -->
+<section id="finalWish">
+  <div class="stack">
+    <p class="line strong w1">Sophia,</p>
+    <p class="line w2">I genuinely hope life is kind to you.</p>
+    <p class="line w3">I hope you find happiness.<br>I hope you find peace.<br>I hope you achieve everything you're working toward.</p>
+    <p class="line w4">And wherever life takes you, I hope you become everything you once dreamed of becoming.</p>
+    <p class="line muted w5">Take care of yourself.</p>
+    <p class="line strong w6">Happy Birthday, Sophia.</p>
+  </div>
+</section>
+
+<!-- FINALE: ENVELOPE ENDING -->
+<section id="finale">
+  <div class="finale-text" id="finaleText">
+    <p class="line strong">Happy Birthday, Sophia.</p>
+  </div>
+
+  <div class="envelope-scene" id="envelopeScene">
+    <div class="envelope-rig" id="envelopeRig">
+      <div class="letter-card" id="letterCard">
+        <p class="lc1">If life ever gives us a reason to talk again,<br>you'll know where to find me.</p>
+        <p class="lc2 sign">Yours faithfully,<br>Your Smallie</p>
+      </div>
+      <div class="envelope-body"></div>
+      <div class="envelope-flap"></div>
+      <div class="envelope-seal"></div>
+    </div>
+    <div class="chapter-closed" id="chapterClosed">Chapter closed.</div>
+  </div>
+</section>
+
+<div class="blackout" id="blackout"></div>
+
+<script>
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const T = reducedMotion ? 0.25 : 1; // global time multiplier for reduced motion
+
+  function onceInView(el, callback, threshold = 0.5){
+    let done = false;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting && !done){
+          done = true;
+          callback();
+          obs.unobserve(el);
+        }
+      });
+    }, { threshold });
+    obs.observe(el);
+  }
+
+  function reveal(el, delay){ setTimeout(() => el.classList.add('show'), delay * T); }
+
+  // ---------- OPENING ----------
+  onceInView(document.getElementById('opening'), () => {
+    reveal(document.querySelector('#opening .l1'), 100);
+    reveal(document.querySelector('#opening .l2'), 500);
+    reveal(document.getElementById('dateLine'), 950);
+    reveal(document.getElementById('dateSub'), 1250);
+  });
+
+  // ---------- SCROLL HINT ----------
+  const scrollHint = document.getElementById('scrollHint');
+  setTimeout(() => scrollHint.classList.add('show'), (reducedMotion ? 400 : 4600) * T);
+  window.addEventListener('scroll', () => scrollHint.classList.add('dismissed'), { once: true, passive: true });
+  onceInView(document.getElementById('finale'), () => scrollHint.classList.add('dismissed'), 0.05);
+
+  // ---------- SECTION 1: RELATIONSHIP GOALS ----------
+  onceInView(document.getElementById('goals'), () => {
+    reveal(document.querySelector('#goals .list-title'), 100);
+    reveal(document.querySelector('#goals .list-intro'), 350);
+
+    const items = document.querySelectorAll('#goalsList li');
+    items.forEach((li, i) => reveal(li, 700 + i * 90));
+
+    const listRevealEnd = 700 + items.length * 90;
+    const markStart = listRevealEnd + 350;
+
+    items.forEach((li, i) => {
+      const box = li.querySelector('.box');
+      setTimeout(() => box.classList.add('marked'), (markStart + i * 110) * T);
+    });
+
+    const markEnd = markStart + items.length * 110;
+    const afterLines = document.querySelectorAll('#afterGoals .line');
+    reveal(afterLines[0], markEnd + 350);
+    reveal(afterLines[1], markEnd + 950);
+    reveal(afterLines[2], markEnd + 1550);
+    reveal(afterLines[3], markEnd + 2150);
+  }, 0.35);
+
+  // ---------- SECTION 2: ACCEPTANCE ----------
+  onceInView(document.getElementById('acceptance'), () => {
+    reveal(document.querySelector('#acceptance .a1'), 100);
+    reveal(document.querySelector('#acceptance .a2'), 550);
+    reveal(document.querySelector('#acceptance .a3'), 1000);
+    reveal(document.querySelector('#acceptance .a4'), 1450);
+    reveal(document.querySelector('#acceptance .a5'), 1900);
+  });
+
+  // ---------- SECTION 3: THINGS I WANTED FOR YOU ----------
+  onceInView(document.getElementById('herGoals'), () => {
+    reveal(document.querySelector('#herGoals .h1'), 100);
+    reveal(document.querySelector('#herGoals .h2'), 500);
+    reveal(document.querySelector('#herGoals .h3'), 850);
+
+    const items = document.querySelectorAll('#herGoalsList li');
+    items.forEach((li, i) => reveal(li, 1150 + i * 90));
+  }, 0.35);
+
+  // ---------- SECTION 4: PERSONAL MOMENT ----------
+  onceInView(document.getElementById('personalMoment'), () => {
+    reveal(document.querySelector('#personalMoment .p1'), 100);
+    reveal(document.querySelector('#personalMoment .p2'), 650);
+    reveal(document.querySelector('#personalMoment .p3'), 1150);
+    reveal(document.querySelector('#personalMoment .p4'), 1700);
+    reveal(document.querySelector('#personalMoment .p5'), 2150);
+  });
+
+  // ---------- SECTION 5: FAREWELL ----------
+  onceInView(document.getElementById('farewellSection'), () => {
+    reveal(document.querySelector('#farewellSection .f1'), 100);
+    reveal(document.querySelector('#farewellSection .f2'), 650);
+    reveal(document.querySelector('#farewellSection .f3'), 1150);
+    reveal(document.querySelector('#farewellSection .f4'), 1650);
+    reveal(document.querySelector('#farewellSection .f5'), 2000);
+  });
+
+  // ---------- SECTION 6: FINAL WISH ----------
+  onceInView(document.getElementById('finalWish'), () => {
+    reveal(document.querySelector('#finalWish .w1'), 100);
+    reveal(document.querySelector('#finalWish .w2'), 550);
+    reveal(document.querySelector('#finalWish .w3'), 1000);
+    reveal(document.querySelector('#finalWish .w4'), 1500);
+    reveal(document.querySelector('#finalWish .w5'), 2000);
+    reveal(document.querySelector('#finalWish .w6'), 2450);
+  });
+
+  // ---------- FINALE: ENVELOPE ENDING ----------
+  onceInView(document.getElementById('finale'), () => {
+    const finaleText = document.getElementById('finaleText');
+    const envelopeScene = document.getElementById('envelopeScene');
+    const envelopeRig = document.getElementById('envelopeRig');
+    const letterCard = document.getElementById('letterCard');
+    const lc1 = document.querySelector('.lc1');
+    const lc2 = document.querySelector('.lc2');
+    const chapterClosed = document.getElementById('chapterClosed');
+    const blackout = document.getElementById('blackout');
+
+    // 1. "Happy Birthday, Sophia." finale line appears, holds
+    setTimeout(() => finaleText.classList.add('show'), 300 * T);
+
+    // 2. fades away
+    setTimeout(() => finaleText.classList.add('fade-out'), 2600 * T);
+
+    // 3. envelope scene + open letter card appear
+    setTimeout(() => {
+      envelopeScene.classList.add('show');
+      letterCard.classList.add('visible');
+    }, 3600 * T);
+
+    // 4. letter message reveals
+    setTimeout(() => lc1.classList.add('show'), 4400 * T);
+    setTimeout(() => lc2.classList.add('show'), 5600 * T);
+
+    // 5. hold so it can be read, then letter slides into envelope
+    setTimeout(() => {
+      letterCard.classList.add('entering');
+    }, 9600 * T);
+
+    // 6. flap closes + seal appears (flap now takes ~2.8s to fold)
+    setTimeout(() => envelopeRig.classList.add('sealed'), 12400 * T);
+
+    // 7. hold closed envelope, then camera pulls back
+    setTimeout(() => envelopeRig.classList.add('pulled-back'), 16200 * T);
+
+    // 8. "Chapter closed." reveals underneath
+    setTimeout(() => chapterClosed.classList.add('show'), 17800 * T);
+
+    // 9. hold, then fade everything to black — absolute final state
+    setTimeout(() => blackout.classList.add('show'), 21000 * T);
+  }, 0.4);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Happy Birthday, Sophia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080706;
+    --text:#f5efe3;
+    --text-muted:#a9a39a;
+    --gold:#d6b878;
+    --wax:#f1e7d2;
+    --flame-a:#ffd98a;
+    --flame-b:#e8912f;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html, body{ height:100%; background: var(--bg); overflow:hidden; }
+  body{ font-family:'Inter', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
+
+  .stage{
+    position:relative; height:100vh; height:100dvh; width:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+    padding: 8vh 6vw 9vh; text-align:center; overflow:hidden;
+  }
+
+  .grain{
+    position:absolute; inset:0; pointer-events:none; opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size:180px 180px; z-index:1;
+  }
+
+  .glow{
+    position:absolute; left:50%; top:50%; width:60vh; height:60vh; transform:translate(-50%,-58%);
+    background: radial-gradient(circle, rgba(214,184,120,0.16) 0%, rgba(214,184,120,0.06) 35%, rgba(8,7,6,0) 70%);
+    filter:blur(2px); transition: opacity 1.1s ease; z-index:0; pointer-events:none;
+  }
+  body.blown .glow{ opacity:0; }
+
+  .stars{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+  .stars span{
+    position:absolute; width:1.5px; height:1.5px; background: rgba(245,239,227,0.7);
+    border-radius:50%; opacity:0; transition: opacity 1.5s ease;
+  }
+  body.blown .stars span{ opacity: var(--star-o, 0.5); }
+
+  .kicker{
+    font-family:'Inter', sans-serif; font-weight:300; font-size:0.72rem; letter-spacing:0.22em;
+    text-transform:uppercase; color: var(--text-muted); opacity:0.65; z-index:2; transition: opacity 0.7s ease;
+  }
+  body.blown .kicker{ opacity:0; }
+
+  .centerpiece{
+    position:relative; z-index:2; display:flex; flex-direction:column; align-items:center;
+    flex:1; justify-content:center; gap: 2.6rem; width:100%;
+  }
+
+  .name{
+    font-family:'Cormorant Garamond', serif; font-weight:400; font-size: clamp(1.9rem, 8vw, 2.9rem);
+    letter-spacing:0.01em; line-height:1.25; color: var(--text); transition: opacity 0.8s ease;
+  }
+  .name em{ font-style:italic; color:var(--gold); }
+  body.blown .name{ opacity:0; }
+
+  .candle-btn{
+    position:relative; background:none; border:none; padding: 2.2rem 3.2rem; cursor:pointer;
+    -webkit-tap-highlight-color: transparent; transition: opacity 0.7s ease;
+  }
+  body.blown .candle-btn{ opacity:0; pointer-events:none; }
+
+  .candle{
+    position:relative; width:22px; height:118px; margin:0 auto;
+    background: linear-gradient(180deg, #fbf5e8 0%, var(--wax) 55%, #e6d9bc 100%);
+    border-radius: 3px 3px 2px 2px;
+    box-shadow: inset -4px 0 6px rgba(0,0,0,0.12), inset 3px 0 5px rgba(255,255,255,0.3);
+  }
+  .candle::after{
+    content:""; position:absolute; top:14px; left:-2px; width:5px; height:16px;
+    background: linear-gradient(180deg, #fbf5e8, transparent); border-radius: 0 0 4px 4px; opacity:0.6;
+  }
+  .wick{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:2px; height:9px; background:#2b241a; border-radius:1px; }
+  .holder{
+    width:46px; height:10px; margin:0 auto; margin-top:-1px;
+    background: linear-gradient(180deg, var(--gold), #a9823f); border-radius: 3px / 6px;
+    box-shadow: 0 2px 10px rgba(214,184,120,0.25);
+  }
+
+  .flame-wrap{ position:absolute; top:-46px; left:50%; transform:translateX(-50%); width:60px; height:60px; display:flex; align-items:flex-end; justify-content:center; pointer-events:none; }
+  .flame{
+    position:relative; width:15px; height:34px;
+    background: radial-gradient(ellipse at 50% 75%, var(--flame-a) 0%, var(--flame-b) 55%, rgba(232,145,47,0) 100%);
+    border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+    filter: drop-shadow(0 0 10px rgba(255,190,110,0.65)) drop-shadow(0 0 22px rgba(232,145,47,0.35));
+    transform-origin: bottom center; animation: flicker 2.6s ease-in-out infinite;
+    transition: opacity 0.7s ease, transform 0.9s ease;
+  }
+  @keyframes flicker{
+    0%, 100% { transform: translateX(0) rotate(-1.2deg) scaleY(1); }
+    30% { transform: translateX(0.6px) rotate(1.4deg) scaleY(1.04); }
+    55% { transform: translateX(-0.5px) rotate(-1.8deg) scaleY(0.97); }
+    80% { transform: translateX(0.3px) rotate(1deg) scaleY(1.02); }
+  }
+  .smoke{ position:absolute; top:-46px; left:50%; transform:translateX(-50%); width:10px; height:10px; opacity:0; pointer-events:none; }
+  .smoke span{ position:absolute; bottom:0; left:0; width:7px; height:7px; background: rgba(242,239,233,0.3); border-radius:50%; filter: blur(3px); opacity:0; }
+  body.blown .smoke span{ animation: rise 1.9s ease-out forwards; }
+  .smoke span:nth-child(1){ animation-delay: 0.04s; }
+  .smoke span:nth-child(2){ animation-delay: 0.28s; left:3px; }
+  .smoke span:nth-child(3){ animation-delay: 0.52s; left:-2px; }
+  @keyframes rise{
+    0%{ opacity:0.6; transform:translate(-50%,0) scale(1); }
+    100%{ opacity:0; transform:translate(-50%,-80px) scale(2.2); }
+  }
+  .glow-pulse{
+    position:absolute; top:-52px; left:50%; transform:translateX(-50%); width:90px; height:90px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,193,110,0.28), rgba(255,193,110,0) 70%);
+    animation: pulse 2.6s ease-in-out infinite; transition: opacity 0.7s ease; pointer-events:none;
+  }
+  @keyframes pulse{ 0%, 100%{ opacity:0.55; } 50%{ opacity:0.85; } }
+
+  .candle-btn.igniting .flame{ animation: flicker-hard 0.3s ease-in-out 2; }
+  @keyframes flicker-hard{
+    0%,100%{ transform: translateX(0) rotate(-4deg) scaleY(1); }
+    50%{ transform: translateX(3px) rotate(6deg) scaleY(0.7); }
+  }
+  body.blown .flame{ opacity:0; transform: translateX(-50%) scaleY(0.05); animation:none; }
+  body.blown .glow-pulse{ opacity:0; }
+
+  .wish{
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:400;
+    font-size: clamp(1.05rem, 3.4vw, 1.35rem); color: var(--text-muted); transition: opacity 0.7s ease;
+  }
+  body.blown .wish{ opacity:0; }
+
+  .hint{
+    font-family:'Inter', sans-serif; font-size:0.68rem; letter-spacing:0.16em; text-transform:uppercase;
+    color: var(--text-muted); opacity:0.55; animation: hintPulse 2.6s ease-in-out infinite; transition: opacity 0.5s ease;
+  }
+  @keyframes hintPulse{ 0%,100%{ opacity:0.4; } 50%{ opacity:0.75; } }
+  body.blown .hint{ opacity:0; animation:none; }
+
+  .reveal{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(86vw, 480px); display:flex; flex-direction:column; align-items:center; gap:1.6rem;
+    z-index:2; pointer-events:none;
+  }
+  .reveal p{
+    font-family:'Cormorant Garamond', serif; font-weight:400; font-size: clamp(1.4rem, 5vw, 1.9rem);
+    line-height:1.4; color: var(--text); opacity:0; transition: opacity 1.05s ease;
+  }
+  body.blown .reveal p.line-1{ transition-delay: 0.3s; }
+  body.blown .reveal p.line-2{ transition-delay: 1.4s; }
+  body.blown .reveal p.show{ opacity:1; }
+
+  .continue{ margin-top:0.6rem; opacity:0; transition: opacity 1s ease; pointer-events:none; }
+  .continue.show{ opacity:1; pointer-events:auto; }
+  .continue a{
+    font-family:'Inter', sans-serif; font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase;
+    color: var(--gold); text-decoration:none; border-bottom: 1px solid rgba(214,184,120,0.4); padding-bottom:6px;
+  }
+
+  .footer-space{ height:1px; z-index:2; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; }
+    .flame, .reveal p, .continue, .kicker, .name, .wish, .hint, .candle-btn, .glow, .stars span{
+      transition-duration: 0.3s !important; transition-delay: 0s !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="grain"></div>
+  <div class="glow"></div>
+  <div class="stars" id="stars"></div>
+
+  <div class="kicker">A little something for you&hellip;</div>
+
+  <div class="centerpiece">
+    <div class="name">Happy Birthday, <em>Sophia.</em></div>
+
+    <button class="candle-btn" id="candleBtn" aria-label="Tap the candle to make a wish">
+      <div class="glow-pulse"></div>
+      <div class="flame-wrap">
+        <div class="flame" id="flame"></div>
+        <div class="smoke" id="smoke"><span></span><span></span><span></span></div>
+      </div>
+      <div class="wick"></div>
+      <div class="candle"></div>
+      <div class="holder"></div>
+    </button>
+
+    <div class="wish">Make a wish.</div>
+    <div class="hint" id="hint">Tap the candle</div>
+  </div>
+
+  <div class="footer-space"></div>
+
+  <div class="reveal">
+    <p class="line-1">I hope you made a good one.</p>
+    <p class="line-2">Because you deserve beautiful things.</p>
+    <div class="continue" id="continueLink">
+      <a href="page2.html" id="continueAnchor">Continue &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const candleBtn = document.getElementById('candleBtn');
+  const body = document.body;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let triggered = false;
+
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 46; i++) {
+    const s = document.createElement('span');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 70 + '%';
+    s.style.setProperty('--star-o', (Math.random() * 0.5 + 0.25).toFixed(2));
+    starsContainer.appendChild(s);
+  }
+
+  function blowOutCandle() {
+    if (triggered) return;
+    triggered = true;
+
+    const lines = document.querySelectorAll('.reveal p');
+    const continueEl = document.getElementById('continueLink');
+
+    const t1 = reducedMotion ? 0 : 210;
+    const t3 = reducedMotion ? 300 : 1440;
+    const t4 = reducedMotion ? 500 : 2480;
+    const t5 = reducedMotion ? 700 : 3440;
+
+    candleBtn.classList.add('igniting');
+    setTimeout(() => body.classList.add('blown'), t1);
+    setTimeout(() => lines[0].classList.add('show'), t3);
+    setTimeout(() => lines[1].classList.add('show'), t4);
+    setTimeout(() => continueEl.classList.add('show'), t5);
+  }
+
+  candleBtn.addEventListener('click', blowOutCandle);
+</script>
+
+</body>
+</html>
